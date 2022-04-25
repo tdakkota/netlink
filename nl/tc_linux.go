@@ -115,6 +115,7 @@ const (
 	SizeofTcSfqRedStats  = 0x18
 	SizeofTcSfqQoptV1    = SizeofTcSfqQopt + SizeofTcSfqRedStats + 0x1c
 	SizeofUint32Bitfield = 0x8
+	SizeofTcMqPrioQopt   = 0x54
 )
 
 // struct tcmsg {
@@ -1141,6 +1142,42 @@ func DeserializeTcSfqQoptV1(b []byte) *TcSfqQoptV1 {
 
 func (x *TcSfqQoptV1) Serialize() []byte {
 	return (*(*[SizeofTcSfqQoptV1]byte)(unsafe.Pointer(x)))[:]
+}
+
+const (
+	TCA_MQPRIO_UNSPEC = iota
+	TCA_MQPRIO_MODE
+	TCA_MQPRIO_SHAPER
+	TCA_MQPRIO_MIN_RATE64
+	TCA_MQPRIO_MAX_RATE64
+	__TCA_MQPRIO_MAX
+)
+
+// struct tc_mqprio_qopt {
+// 	__u8	num_tc;
+// 	__u8	prio_tc_map[TC_QOPT_BITMASK + 1];
+// 	__u8	hw;
+// 	__u16	count[TC_QOPT_MAX_QUEUE];
+// 	__u16	offset[TC_QOPT_MAX_QUEUE];
+// };
+type TcMqPrioQopt struct {
+	NumTc     uint8
+	PrioTcMap [16]uint8
+	Hw        uint8
+	Count     [16]uint16
+	Offset    [16]uint16
+}
+
+func (x *TcMqPrioQopt) Len() int {
+	return SizeofTcMqPrioQopt
+}
+
+func DeserializeTcMqPrioQopt(b []byte) *TcMqPrioQopt {
+	return (*TcMqPrioQopt)(unsafe.Pointer(&b[0:SizeofTcMqPrioQopt][0]))
+}
+
+func (x *TcMqPrioQopt) Serialize() []byte {
+	return (*(*[SizeofTcMqPrioQopt]byte)(unsafe.Pointer(x)))[:]
 }
 
 // IPProto represents Flower ip_proto attribute
